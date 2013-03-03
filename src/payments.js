@@ -116,6 +116,7 @@ paymentCalculator.lib = {
                 return paymentCalculator.lib.calculatePaymentAmountCeil();
             break;
             case 'floor':
+            default:
                 return paymentCalculator.lib.calculatePaymentAmountFloor();
             break;
         }
