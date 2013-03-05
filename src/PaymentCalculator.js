@@ -88,7 +88,7 @@ PaymentCalculator.prototype.sumPayments = function() {
     for (num in this.payments) {
         total += this.payments[num];
     }
-    return total;
+    return this.round(total, 0.01);
 };
 
 PaymentCalculator.prototype.calculatePaymentAmount = function(method) {
@@ -109,21 +109,18 @@ PaymentCalculator.prototype.generatePayments = function() {
 
 PaymentCalculator.prototype.validatePayments = function() {
     if (this.sumPayments() > this.settings.principal) {
-        // Always round this to nearest penny
         var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this.getMaxAdjustedPaymentIndex() : this.getMinAdjustedPaymentIndex();
-        this.payments[adjustedPaymentIndex] -= this.round(this.sumPayments() - this.settings.principal, 0.01);
+        this.payments[adjustedPaymentIndex] -= this.round(this.sumPayments() - this.settings.principal, 0.01); // Always round this to nearest penny
     }
     if (this.sumPayments() < this.settings.principal) {
-        // Always round this to nearest penny
         var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this.getMinAdjustedPaymentIndex() : this.getMaxAdjustedPaymentIndex();
-        this.payments[adjustedPaymentIndex] += this.round(this.settings.principal - this.sumPayments(), 0.01);
+        this.payments[adjustedPaymentIndex] += this.round(this.settings.principal - this.sumPayments(), 0.01); // Always round this to nearest penny
     }
 };
 
 PaymentCalculator.prototype.getMinAdjustedPaymentIndex = function() {
     for (var x=0; x < this.payments.length; x++) {
-        if (this.settings.initialPayments[x]) {
-        } else {
+        if ((typeof this.settings.initialPayments[x] === 'undefined') || (this.settings.initialPayments[x] == 0)) {
             return x;
         }
     }
@@ -131,8 +128,7 @@ PaymentCalculator.prototype.getMinAdjustedPaymentIndex = function() {
 
 PaymentCalculator.prototype.getMaxAdjustedPaymentIndex = function() {
     for (var x=this.payments.length - 1; x > -1; x--) {
-        if (this.settings.initialPayments[x]) {
-        } else {
+        if ((typeof this.settings.initialPayments[x] === 'undefined') || (this.settings.initialPayments[x] == 0)) {
             return x;
         }
     }
@@ -142,5 +138,6 @@ PaymentCalculator.prototype.round = function(amount, precision) {
     if (typeof(precision) == 'undefined') {
         precision = this.settings.roundingPrecision;
     }
-    return Math.round(amount / precision) * precision;
+    ok = Math.round(amount / precision) * precision;
+    return ok;
 };
