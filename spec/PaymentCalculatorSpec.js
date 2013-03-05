@@ -5,6 +5,7 @@ describe("PaymentCalculator", function() {
       paymentCalculator = new PaymentCalculator();
     });
     
+/*
     it("should be able to set numPayments", function() {
       paymentCalculator.setNumPayments(5);
       expect(paymentCalculator.settings.numPayments).toEqual(5);
@@ -30,6 +31,19 @@ describe("PaymentCalculator", function() {
         expect(paymentCalculator.settings.roundingPrecision).toEqual(0.001);
         paymentCalculator.setRoundingPrecision(0.0001);
         expect(paymentCalculator.settings.roundingPrecision).not.toEqual(0.0001);
+    });
+
+    it("should be able to set payment gravity properly", function() {
+        paymentCalculator.setPaymentGravity('top');
+        expect(paymentCalculator.settings.paymentGravity).toEqual('top');
+        paymentCalculator.setPaymentGravity('TOP');
+        expect(paymentCalculator.settings.paymentGravity).toEqual('top');
+        paymentCalculator.setPaymentGravity('bottom');
+        expect(paymentCalculator.settings.paymentGravity).toEqual('bottom');
+        paymentCalculator.setPaymentGravity('BOTTOM');
+        expect(paymentCalculator.settings.paymentGravity).toEqual('bottom');
+        paymentCalculator.setPaymentGravity('blah');
+        expect(paymentCalculator.settings.paymentGravity).toEqual('bottom');
     });
     
     it("should allow for setting an array of initial payments", function() {
@@ -71,7 +85,7 @@ describe("PaymentCalculator", function() {
             paymentCalculator.generatePayments();
         });
 
-        it("should show 4 remaining payments", function() {
+        it("should show 4 payments", function() {
             expect(paymentCalculator.generatePayments().length).toEqual(4);
         });
 
@@ -80,9 +94,35 @@ describe("PaymentCalculator", function() {
         });
 
         it("should show 2 payments of 16.67 and 1 of 16.66", function() {
-            expect(paymentCalculator.generatePayments()[1]).toEqual(16.67);
+            expect(paymentCalculator.generatePayments()[1]).toEqual(16.66);
             expect(paymentCalculator.generatePayments()[2]).toEqual(16.67);
-            expect(paymentCalculator.generatePayments()[3]).toEqual(16.66);
+            expect(paymentCalculator.generatePayments()[3]).toEqual(16.67);
+        });
+
+        it("should sum all payments to 100", function() {
+            expect(paymentCalculator.sumPayments()).toEqual(100);
+        });
+    });
+
+    describe("when principal is 100 and numPayments is 2 and initialPayments is [20,20,20]", function() {
+        beforeEach(function() {
+            paymentCalculator.setNumPayments(2);
+            paymentCalculator.setPrincipal(100);
+        });
+        it("should throw exception if all available payment slots are prefilled.", function() {
+            var foo = function() {
+               paymentCalculator.setInitialPayments([20,20,20]);
+            };
+            expect(foo).toThrow();
+        });
+    });
+
+    describe("when principal is 100 and numPayments is 5 and initialPayments is [0,0,80,0,0]", function() {
+         beforeEach(function() {
+            paymentCalculator.setNumPayments(5);
+            paymentCalculator.setPrincipal(100);
+            paymentCalculator.setInitialPayments([0,0,80,0,0]);
+            paymentCalculator.generatePayments();
         });
 
         it("should sum all payments to 100", function() {
@@ -90,4 +130,26 @@ describe("PaymentCalculator", function() {
         });
 
     });
+*/
+
+    describe("when principal is 1000 and numPayments is 5 and initialPayments is ['200','200',0,0,0]", function() {
+         beforeEach(function() {
+            paymentCalculator.setNumPayments(5);
+            paymentCalculator.setPrincipal(1000);
+            paymentCalculator.setInitialPayments(["200","200",0,0,0]);
+            paymentCalculator.generatePayments();
+        });
+
+        it("should sum all payments to 1000", function() {
+            // console.log(paymentCalculator.generatePayments());
+            expect(paymentCalculator.sumPayments()).toEqual(1000);
+            expect(paymentCalculator.generatePayments()[0]).toEqual(200);
+            expect(paymentCalculator.generatePayments()[1]).toEqual(200);
+            expect(paymentCalculator.generatePayments()[2]).toEqual(200);
+            expect(paymentCalculator.generatePayments()[3]).toEqual(200);
+            expect(paymentCalculator.generatePayments()[4]).toEqual(200);
+        });
+
+    });
+
 });
