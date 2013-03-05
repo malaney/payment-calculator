@@ -107,38 +107,34 @@ PaymentCalculator.prototype.generatePayments = function() {
 };
 
 PaymentCalculator.prototype.validatePayments = function() {
-    // initialize adjustedPaymentIndex
-    var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? 
-        0 : this.payments.length - 1; 
-
-    if (this.settings.paymentGravity == 'top') {
-        for (var x=0; x < this.payments.length; x++) {
-            if (this.settings.initialPayments[x]) {
-               // 
-            } else {
-                adjustedPaymentIndex = x;
-                break;
-            }
-        }
-    } else {
-        for (var x=this.payments.length; x > -1; x--) {
-            if (this.settings.initialPayments[x]) {
-                // 
-            } else {
-                adjustedPaymentIndex = x;
-                break;
-            }
-        }
-    }
     if (this.sumPayments() > this.settings.principal) {
         // Always round this to nearest penny
+        var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this.getMaxAdjustedPaymentIndex() : this.getMinAdjustedPaymentIndex();
         this.payments[adjustedPaymentIndex] -= this.round(this.sumPayments() - this.settings.principal, 0.01);
     }
     if (this.sumPayments() < this.settings.principal) {
         // Always round this to nearest penny
+        var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this.getMinAdjustedPaymentIndex() : this.getMaxAdjustedPaymentIndex();
         this.payments[adjustedPaymentIndex] += this.round(this.settings.principal - this.sumPayments(), 0.01);
     }
+};
 
+PaymentCalculator.prototype.getMinAdjustedPaymentIndex = function() {
+    for (var x=0; x < this.payments.length; x++) {
+        if (this.settings.initialPayments[x]) {
+        } else {
+            return x;
+        }
+    }
+};
+
+PaymentCalculator.prototype.getMaxAdjustedPaymentIndex = function() {
+    for (var x=this.payments.length - 1; x > -1; x--) {
+        if (this.settings.initialPayments[x]) {
+        } else {
+            return x;
+        }
+    }
 };
 
 PaymentCalculator.prototype.round = function(amount, precision) {
