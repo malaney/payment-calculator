@@ -10,6 +10,7 @@ function PaymentCalculator(options) {
 
     this.settings = jQuery.extend({}, this.defaults, options);
     this.openSlots = this.settings.numPayments;
+    this.setInitialPayments(this.settings.initialPayments);
 }
 
 PaymentCalculator.prototype.setNumPayments = function(numPayments) {
