@@ -5,7 +5,6 @@ describe("PaymentCalculator", function() {
       paymentCalculator = new PaymentCalculator();
     });
     
-/*
     it("should be able to set numPayments", function() {
       paymentCalculator.setNumPayments(5);
       expect(paymentCalculator.settings.numPayments).toEqual(5);
@@ -94,9 +93,9 @@ describe("PaymentCalculator", function() {
         });
 
         it("should show 2 payments of 16.67 and 1 of 16.66", function() {
-            expect(paymentCalculator.generatePayments()[1]).toEqual(16.66);
+            expect(paymentCalculator.generatePayments()[1]).toEqual(16.67);
             expect(paymentCalculator.generatePayments()[2]).toEqual(16.67);
-            expect(paymentCalculator.generatePayments()[3]).toEqual(16.67);
+            expect(paymentCalculator.generatePayments()[3]).toEqual(16.66);
         });
 
         it("should sum all payments to 100", function() {
@@ -130,7 +129,6 @@ describe("PaymentCalculator", function() {
         });
 
     });
-*/
 
     describe("when principal is 1000 and numPayments is 5 and initialPayments is ['200','200',0,0,0]", function() {
          beforeEach(function() {
@@ -141,7 +139,6 @@ describe("PaymentCalculator", function() {
         });
 
         it("should sum all payments to 1000", function() {
-            // console.log(paymentCalculator.generatePayments());
             expect(paymentCalculator.sumPayments()).toEqual(1000);
             expect(paymentCalculator.generatePayments()[0]).toEqual(200);
             expect(paymentCalculator.generatePayments()[1]).toEqual(200);
@@ -149,7 +146,28 @@ describe("PaymentCalculator", function() {
             expect(paymentCalculator.generatePayments()[3]).toEqual(200);
             expect(paymentCalculator.generatePayments()[4]).toEqual(200);
         });
-
     });
+
+    describe("when principal is 1347 and numPayments is 5 and initialPayments is ['260',0,0,0,0] and rounding precision is 10", function() {
+         beforeEach(function() {
+            paymentCalculator.setNumPayments(5);
+            paymentCalculator.setPrincipal(1347);
+            paymentCalculator.setInitialPayments(["260",0,0,0,0]);
+            paymentCalculator.setRoundingPrecision(10);
+            paymentCalculator.generatePayments();
+        });
+
+        it("should sum all payments to 1347", function() {
+            expect(paymentCalculator.sumPayments()).toEqual(1347);
+            expect(paymentCalculator.generatePayments()[0]).toEqual(260);
+            expect(paymentCalculator.generatePayments()[1]).toEqual(277);
+            expect(paymentCalculator.generatePayments()[2]).toEqual(270);
+            expect(paymentCalculator.generatePayments()[3]).toEqual(270);
+            expect(paymentCalculator.generatePayments()[4]).toEqual(270);
+        });
+    });
+
+
+
 
 });
