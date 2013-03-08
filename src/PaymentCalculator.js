@@ -107,6 +107,12 @@ PaymentCalculator.prototype.generatePayments = function() {
     return this.payments;
 };
 
+PaymentCalculator.prototype.paymentsJson = function() {
+    if (typeof JSON.stringify == 'function') {
+        return JSON.stringify(this.generatePayments());
+    }
+}
+
 PaymentCalculator.prototype.validatePayments = function() {
     if (this.sumPayments() > this.settings.principal) {
         var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this.getMaxAdjustedPaymentIndex() : this.getMinAdjustedPaymentIndex();
