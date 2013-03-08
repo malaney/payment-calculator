@@ -49,7 +49,7 @@ PaymentCalculator.prototype.setRoundingPrecision = function(roundingPrecision) {
 
 PaymentCalculator.prototype.setInitialPayments = function(initialPayments) {
     if (initialPayments instanceof Array) {
-        for (i=0; i < initialPayments.length; i++) {
+        for (var i=0; i < initialPayments.length; i++) {
             initialPayments[i] = parseInt(initialPayments[i]);
         }
         this.settings.initialPayments = initialPayments;
@@ -58,7 +58,7 @@ PaymentCalculator.prototype.setInitialPayments = function(initialPayments) {
         }
 
         this.openSlots = 0;
-        for (i=0; i < this.settings.numPayments; i++) {
+        for (var i=0; i < this.settings.numPayments; i++) {
             if (initialPayments[i] > 0) {
             } else {
                 this.openSlots++;
@@ -77,7 +77,7 @@ PaymentCalculator.prototype.initialPayments = function() {
 
 PaymentCalculator.prototype.sumInitialPayments = function() {
     var total = 0;
-    for (num in this.settings.initialPayments) {
+    for (var num in this.settings.initialPayments) {
         total += this.settings.initialPayments[num];
     }
     return total;
@@ -85,7 +85,7 @@ PaymentCalculator.prototype.sumInitialPayments = function() {
 
 PaymentCalculator.prototype.sumPayments = function() {
     var total = 0;
-    for (num in this.payments) {
+    for (var num in this.payments) {
         total += this.payments[num];
     }
     return this.round(total, 0.01);
@@ -100,7 +100,7 @@ PaymentCalculator.prototype.generatePayments = function() {
     this.payments = [];
     var payAmt = this.calculatePaymentAmount();
     
-    for (i=0; i < this.settings.numPayments; i++) {
+    for (var i=0; i < this.settings.numPayments; i++) {
         this.payments[i] = (typeof this.settings.initialPayments[i] !== 'undefined') && (this.settings.initialPayments[i] > 0) ? this.settings.initialPayments[i] : payAmt;
     }
     this.validatePayments();
@@ -138,6 +138,5 @@ PaymentCalculator.prototype.round = function(amount, precision) {
     if (typeof(precision) == 'undefined') {
         precision = this.settings.roundingPrecision;
     }
-    ok = Math.round(amount / precision) * precision;
-    return ok;
+    return Math.round(amount / precision) * precision;
 };
