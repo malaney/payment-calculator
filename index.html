@@ -1,7 +1,7 @@
 <html>
 <head>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script type="text/javascript" src="foo.js"></script>
+    <script type="text/javascript" src="src/PaymentCalculator.js"></script>
     <script type="text/javascript" src="src/mustache.js"></script>
     <script type="text/javascript">
 $(document).ready(function() {
@@ -18,8 +18,7 @@ $(document).ready(function() {
 
         try {
             // compute payments
-            // paymentCalculator = new PaymentCalculator({'principal': $('#principal').val(), 'numPayments': $('#num_payments').val(), 'paymentGravity': $('#payment_gravity').val(), 'roundingPrecision': $('#rounding_precision').val(), 'initialPayments': initialPayments});
-            paymentCalculator = initPaymentCalculator();
+            paymentCalculator = new PaymentCalculator({'principal': $('#principal').val(), 'numPayments': $('#num_payments').val(), 'paymentGravity': $('#payment_gravity').val(), 'roundingPrecision': $('#rounding_precision').val(), 'initialPayments': initialPayments});
             payments = paymentCalculator.generatePayments();
        
             for (i=0; i < payments.length; i++) {
