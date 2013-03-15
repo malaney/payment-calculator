@@ -13,10 +13,23 @@
                 paymentGravity: 'top'
             };
 
-            this.settings = jQuery.extend({}, this.defaults, options);
+            this.settings = this.extend(this.defaults, options);
             this.openSlots = this.settings.numPayments;
             this.setInitialPayments(this.settings.initialPayments);
         } 
+
+        PaymentCalculator.prototype.extend = function(obj, extObj) {
+            if (arguments.length > 2) {
+                for (var a = 1; a < arguments.length; a++) {
+                    extend(obj, arguments[a]);
+                }
+            } else {
+                for (var i in extObj) {
+                    obj[i] = extObj[i];
+                }
+            }
+            return obj;
+        };
 
         PaymentCalculator.prototype.setNumPayments = function(numPayments) {
             if (numPayments > 0) {
