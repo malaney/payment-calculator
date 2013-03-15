@@ -166,8 +166,4 @@ describe("PaymentCalculator", function() {
             expect(paymentCalculator.generatePayments()[4]).toEqual(270);
         });
     });
-
-
-
-
 });
