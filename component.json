@@ -1,0 +1,7 @@
+{
+    "name": "PaymentCalculator",
+    "version": "0.1",
+    "main": ["src/PaymentCalculator.js"],
+    "dependencies": {
+    }
+}
