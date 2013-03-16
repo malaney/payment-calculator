@@ -106,22 +106,22 @@
             for (var num in this.payments) {
                 total += this.payments[num];
             }
-            return this.round(total, 0.01);
+            return this._round(total, 0.01);
         };
 
-        PaymentCalculator.prototype.calculatePaymentAmount = function(method) {
-            return this.round( (this.settings.principal - this.sumInitialPayments()) / this.openSlots );
+        PaymentCalculator.prototype._calculatePaymentAmount = function(method) {
+            return this._round( (this.settings.principal - this.sumInitialPayments()) / this.openSlots );
 
         };
 
         PaymentCalculator.prototype.generatePayments = function() {
             this.payments = [];
-            var payAmt = this.calculatePaymentAmount();
+            var payAmt = this._calculatePaymentAmount();
             
             for (var i=0; i < this.settings.numPayments; i++) {
                 this.payments[i] = (typeof this.settings.initialPayments[i] !== 'undefined') && (this.settings.initialPayments[i] > 0) ? this.settings.initialPayments[i] : payAmt;
             }
-            this.validatePayments();
+            this._validatePayments();
             return this.payments;
         };
 
@@ -131,18 +131,18 @@
             }
         }
 
-        PaymentCalculator.prototype.validatePayments = function() {
+        PaymentCalculator.prototype._validatePayments = function() {
             if (this.sumPayments() > this.settings.principal) {
-                var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this.getMaxAdjustedPaymentIndex() : this.getMinAdjustedPaymentIndex();
-                this.payments[adjustedPaymentIndex] -= this.round(this.sumPayments() - this.settings.principal, 0.01); // Always round this to nearest penny
+                var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this._getMaxAdjustedPaymentIndex() : this._getMinAdjustedPaymentIndex();
+                this.payments[adjustedPaymentIndex] -= this._round(this.sumPayments() - this.settings.principal, 0.01); // Always round this to nearest penny
             }
             if (this.sumPayments() < this.settings.principal) {
-                var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this.getMinAdjustedPaymentIndex() : this.getMaxAdjustedPaymentIndex();
-                this.payments[adjustedPaymentIndex] += this.round(this.settings.principal - this.sumPayments(), 0.01); // Always round this to nearest penny
+                var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this._getMinAdjustedPaymentIndex() : this._getMaxAdjustedPaymentIndex();
+                this.payments[adjustedPaymentIndex] += this._round(this.settings.principal - this.sumPayments(), 0.01); // Always round this to nearest penny
             }
         };
 
-        PaymentCalculator.prototype.getMinAdjustedPaymentIndex = function() {
+        PaymentCalculator.prototype._getMinAdjustedPaymentIndex = function() {
             for (var x=0; x < this.payments.length; x++) {
                 if ((typeof this.settings.initialPayments[x] === 'undefined') || (this.settings.initialPayments[x] == 0)) {
                     return x;
@@ -150,7 +150,7 @@
             }
         };
 
-        PaymentCalculator.prototype.getMaxAdjustedPaymentIndex = function() {
+        PaymentCalculator.prototype._getMaxAdjustedPaymentIndex = function() {
             for (var x=this.payments.length - 1; x > -1; x--) {
                 if ((typeof this.settings.initialPayments[x] === 'undefined') || (this.settings.initialPayments[x] == 0)) {
                     return x;
@@ -158,7 +158,7 @@
             }
         };
 
-        PaymentCalculator.prototype.round = function(amount, precision) {
+        PaymentCalculator.prototype._round = function(amount, precision) {
             if (typeof(precision) == 'undefined') {
                 precision = this.settings.roundingPrecision;
             }
