@@ -10,11 +10,12 @@ $(document).ready(function() {
         $('#payments').empty();
 
         var initialPayments = [];
+        var strategyValue = $.isNumeric($('#strategy_value').val()) ? $('#strategy_value').val() : 0;
         if ($('#payment_strategy').val() == 'dp') {
-            initialPayments[0] = $('#strategy_value').val();
+            initialPayments[0] = strategyValue;
         } else if ($('#payment_strategy').val() == 'mp') {
             for (var i=0; i < $('#num_payments').val(); i++) {
-                initialPayments.push($('#strategy_value').val());
+                initialPayments.push(strategyValue);
             }
             initialPayments[0] = 0;
         }
