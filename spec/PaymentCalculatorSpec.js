@@ -166,4 +166,16 @@ describe("PaymentCalculator", function() {
             expect(paymentCalculator.generatePayments()[4]).toEqual(270);
         });
     });
+
+    describe("when performing imports and exports", function() {
+        beforeEach(function() {
+            paymentCalculator.import({'principal': 1000, 'payments': [250,250,250,250]});
+            paymentCalculator.generatePayments();
+        });
+
+        it("should sum payments to 1000", function() {
+            expect(paymentCalculator.sumPayments()).toEqual(1000);
+            expect(paymentCalculator.settings.numPayments).toEqual(4);
+        });
+    });
 });

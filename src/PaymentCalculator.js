@@ -32,6 +32,29 @@
             return obj;
         };
 
+        PaymentCalculator.prototype.import = function(obj) {
+        };
+
+        PaymentCalculator.prototype.export = function() {
+            obj = {};
+            obj.principal = this.settings.principal;
+            obj.paymentFrequency = this.settings.paymentFrequeuncy;
+            obj.payments = this.generatePayments();
+            obj.summary = this.generateSummary();
+            return obj;
+        };
+
+        PaymentCalculator.prototype.import = function(obj) {
+            this.setPrincipal(obj.principal);
+            this.setInitialPayments(obj.payments);
+            this.setNumPayments(obj.payments.length);
+            this.setPaymentFrequency(obj.paymentFrequency);
+        };
+
+        PaymentCalculator.prototype.generateSummary = function() {
+            return this.settings.numPayments + ' payments totalling ' + this.sumPayments();
+        };
+
         PaymentCalculator.prototype.setPaymentFrequency = function(paymentFrequency) {
             if (typeof paymentFrequency == 'string') {
                 switch(paymentFrequency) {
