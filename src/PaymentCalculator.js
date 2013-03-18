@@ -8,6 +8,7 @@
                 principal: 0,
                 numPayments: 12,
                 initialPayments: [],
+                paymentFrequeuncy: 'monthly',
                 roundingPrecision: 1,
                 roundingMethod: 'ceil',
                 paymentGravity: 'top'
@@ -29,6 +30,21 @@
                 }
             }
             return obj;
+        };
+
+        PaymentCalculator.prototype.setPaymentFrequency = function(paymentFrequency) {
+            if (typeof paymentFrequency == 'string') {
+                switch(paymentFrequency) {
+                    case 'MONTHLY':
+                    case 'YEARLY':
+                    case 'WEEKLY':
+                    case 'monthly':
+                    case 'yearly':
+                    case 'weekly':
+                        this.settings.paymentFrequency = paymentFrequency.toLowerCase();
+                    break;
+                }
+            }
         };
 
         PaymentCalculator.prototype.setNumPayments = function(numPayments) {
