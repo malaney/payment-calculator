@@ -52,7 +52,17 @@
         };
 
         PaymentCalculator.prototype.generateSummary = function() {
-            return this.settings.numPayments + ' payments totalling ' + this.sumPayments();
+            var payments = this.generatePayments(), pjs = {}, paystrings = [];
+            // Tally up individual payments
+            for (var i=0; i < payments.length; i++) {
+                pjs[payments[i]] = (typeof pjs[payments[i]] != 'undefined') ? pjs[payments[i]] + 1 : 1;
+            }
+
+            var output = this.settings.numPayments + ' payments totalling $' + this.sumPayments();
+            for (var key in pjs) {
+                paystrings.push(pjs[key] + ' @ $' + key);
+            }
+            return output + ' (' + paystrings.join(', ') + ')';
         };
 
         PaymentCalculator.prototype.setPaymentFrequency = function(paymentFrequency) {
