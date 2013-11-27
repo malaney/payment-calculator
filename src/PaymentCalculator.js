@@ -6,6 +6,7 @@
         {
             this.defaults = {
                 principal: 0,
+                discount: 0,
                 numPayments: 12,
                 initialPayments: [],
                 paymentFrequeuncy: 'monthly',
@@ -41,11 +42,13 @@
             obj.paymentFrequency = this.settings.paymentFrequeuncy;
             obj.payments = this.generatePayments();
             obj.summary = this.generateSummary();
+            obj.discount = this.settings.discount;
             return obj;
         };
 
         PaymentCalculator.prototype.import = function(obj) {
             this.setPrincipal(obj.principal);
+            this.setDiscount(obj.discount);
             this.setInitialPayments(obj.payments);
             this.setNumPayments(obj.payments.length);
             this.setPaymentFrequency(obj.paymentFrequency);
@@ -92,6 +95,13 @@
                 this.settings.principal = principal;
             }
         };
+
+        PaymentCalculator.prototype.setDiscount = function(discount) {
+            if (discount > 0) {
+                this.settings.discount = discount;
+            }
+        };
+
 
         PaymentCalculator.prototype.setPaymentGravity = function(paymentGravity) {
             switch (paymentGravity.toLowerCase()) {
@@ -159,7 +169,7 @@
         };
 
         PaymentCalculator.prototype._calculatePaymentAmount = function(method) {
-            return this._round( (this.settings.principal - this.sumInitialPayments()) / this.openSlots );
+            return this._round( (this.settings.principal - this.settings.discount - this.sumInitialPayments()) / this.openSlots );
 
         };
 
@@ -181,13 +191,13 @@
         }
 
         PaymentCalculator.prototype._validatePayments = function() {
-            if (this.sumPayments() > this.settings.principal) {
+            if (this.sumPayments() > this.settings.principal - this.settings.discount) {
                 var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this._getMaxAdjustedPaymentIndex() : this._getMinAdjustedPaymentIndex();
-                this.payments[adjustedPaymentIndex] -= this._round(this.sumPayments() - this.settings.principal, 0.01); // Always round this to nearest penny
+                this.payments[adjustedPaymentIndex] -= this._round(this.sumPayments() - this.settings.principal - this.settings.discount, 0.01); // Always round this to nearest penny
             }
-            if (this.sumPayments() < this.settings.principal) {
+            if (this.sumPayments() < this.settings.principal - this.settings.discount) {
                 var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this._getMinAdjustedPaymentIndex() : this._getMaxAdjustedPaymentIndex();
-                this.payments[adjustedPaymentIndex] += this._round(this.settings.principal - this.sumPayments(), 0.01); // Always round this to nearest penny
+                this.payments[adjustedPaymentIndex] += this._round(this.settings.principal - this.settings.discount - this.sumPayments(), 0.01); // Always round this to nearest penny
             }
         };
 
