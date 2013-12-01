@@ -12,12 +12,17 @@
                 paymentFrequeuncy: 'monthly',
                 roundingPrecision: 1,
                 roundingMethod: 'ceil',
-                paymentGravity: 'top'
+                paymentGravity: 'top',
+                maxDiscount: 0
             };
 
             this.settings = this.extend(this.defaults, options);
             this.openSlots = this.settings.numPayments;
             this.setInitialPayments(this.settings.initialPayments);
+
+            if ((this.settings.discount > this.settings.maxDiscount) && (this.settings.maxDiscount > 0)) {
+                throw "Discount must be less than " + this.settings.maxDiscount;
+            }
         } 
 
         PaymentCalculator.prototype.extend = function(obj, extObj) {
@@ -61,7 +66,12 @@
                 pjs[payments[i]] = (typeof pjs[payments[i]] != 'undefined') ? pjs[payments[i]] + 1 : 1;
             }
 
-            var output = this.settings.numPayments + ' payments totalling $' + this.sumPayments();
+            // var output = this.settings.numPayments + ' payments totalling $' + this.sumPayments();
+            var output = this.settings.numPayments + ' payments totalling $' + this.settings.principal;
+            if (this.settings.discount > 0) {
+                output += ' w/ a $' + this.settings.discount + ' discount ';
+            }
+
             for (var key in pjs) {
                 paystrings.push(pjs[key] + ' @ $' + key);
             }
@@ -98,7 +108,11 @@
 
         PaymentCalculator.prototype.setDiscount = function(discount) {
             if (discount > 0) {
-                this.settings.discount = discount;
+                if (discount < this.settings.maxDiscount) {
+                    this.settings.discount = discount;
+                } else {
+                    throw "Discount must be less than " + this.settings.maxDiscount;
+                }
             }
         };
 
@@ -198,6 +212,12 @@
             if (this.sumPayments() < this.settings.principal - this.settings.discount) {
                 var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this._getMinAdjustedPaymentIndex() : this._getMaxAdjustedPaymentIndex();
                 this.payments[adjustedPaymentIndex] += this._round(this.settings.principal - this.settings.discount - this.sumPayments(), 0.01); // Always round this to nearest penny
+            }
+            // verify that all payments are positive integers
+            for (var i=0; i < this.settings.numPayments; i++) {
+                if (this.payments[i] < 0) {
+                    throw "This configuration results in negative payments which are not allowed.  Please make adjustments.";
+                }
             }
         };
 
