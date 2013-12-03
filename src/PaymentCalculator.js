@@ -108,7 +108,7 @@
 
         PaymentCalculator.prototype.setDiscount = function(discount) {
             if (discount > 0) {
-                if (discount < this.settings.maxDiscount) {
+                if ((discount < this.settings.maxDiscount) || (this.settings.maxDiscount == 0)) {
                     this.settings.discount = discount;
                 } else {
                     throw "Discount must be less than " + this.settings.maxDiscount;
