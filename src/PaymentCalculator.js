@@ -7,6 +7,7 @@
             this.defaults = {
                 principal: 0,
                 discount: 0,
+                prePayment: 0,
                 numPayments: 12,
                 initialPayments: [],
                 paymentFrequeuncy: 'monthly',
@@ -48,6 +49,7 @@
             obj.payments = this.generatePayments();
             obj.summary = this.generateSummary();
             obj.discount = this.settings.discount;
+            obj.prePayment = this.settings.prePayment;
             return obj;
         };
 
@@ -67,7 +69,7 @@
             }
 
             // var output = this.settings.numPayments + ' payments totalling $' + this.sumPayments();
-            var output = this.settings.numPayments + ' payments totalling $' + this.settings.principal;
+            var output = this.settings.numPayments + ' payments totalling $' + this.sumPayments();
             if (this.settings.discount > 0) {
                 output += ' w/ a $' + this.settings.discount + ' discount ';
             }
@@ -75,7 +77,13 @@
             for (var key in pjs) {
                 paystrings.push(pjs[key] + ' @ $' + key);
             }
-            return output + ' (' + paystrings.join(', ') + ')';
+            output += ' (' + paystrings.join(', ') + ')';
+
+            if (this.settings.prePayment > 0) {
+                output += ' including a $' + this.settings.prePayment + ' pre-payment ';
+            }
+
+            return output;
         };
 
         PaymentCalculator.prototype.setPaymentFrequency = function(paymentFrequency) {
@@ -105,6 +113,13 @@
                 this.settings.principal = principal;
             }
         };
+
+        PaymentCalculator.prototype.setPrePayment = function(prePayment) {
+            if (prePayment > 0) {
+                this.settings.prePayment = prePayment;
+            }
+        };
+
 
         PaymentCalculator.prototype.setDiscount = function(discount) {
             if (discount > 0) {
@@ -183,7 +198,7 @@
         };
 
         PaymentCalculator.prototype._calculatePaymentAmount = function(method) {
-            return this._round( (this.settings.principal - this.settings.discount - this.sumInitialPayments()) / this.openSlots );
+            return this._round( (this.settings.principal - this.settings.prePayment - this.settings.discount - this.sumInitialPayments()) / this.openSlots );
 
         };
 
@@ -205,11 +220,11 @@
         }
 
         PaymentCalculator.prototype._validatePayments = function() {
-            if (this.sumPayments() > this.settings.principal - this.settings.discount) {
+            if (this.sumPayments() > this.settings.principal - this.settings.prePayment - this.settings.discount) {
                 var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this._getMaxAdjustedPaymentIndex() : this._getMinAdjustedPaymentIndex();
                 this.payments[adjustedPaymentIndex] -= this._round(this.sumPayments() - this.settings.principal - this.settings.discount, 0.01); // Always round this to nearest penny
             }
-            if (this.sumPayments() < this.settings.principal - this.settings.discount) {
+            if (this.sumPayments() < this.settings.principal - this.settings.prePayment - this.settings.discount) {
                 var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this._getMinAdjustedPaymentIndex() : this._getMaxAdjustedPaymentIndex();
                 this.payments[adjustedPaymentIndex] += this._round(this.settings.principal - this.settings.discount - this.sumPayments(), 0.01); // Always round this to nearest penny
             }
