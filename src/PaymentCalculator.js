@@ -172,7 +172,7 @@
                 }
 
                 if (!this.openSlots) {
-                    throw "There are no open slots available for payment calculation."
+                    // throw "There are no open slots available for payment calculation."
                 }
             }
         };
