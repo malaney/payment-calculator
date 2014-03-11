@@ -7,6 +7,7 @@
             this.defaults = {
                 principal: 0,
                 discount: 0,
+                credit: 0,
                 prePayment: 0,
                 numPayments: 12,
                 initialPayments: [],
@@ -49,16 +50,19 @@
             obj.payments = this.generatePayments();
             obj.summary = this.generateSummary();
             obj.discount = this.settings.discount;
+            obj.credit = this.settings.credit;
             obj.prePayment = this.settings.prePayment;
             return obj;
         };
 
         PaymentCalculator.prototype.import = function(obj) {
             this.setPrincipal(obj.principal);
-            this.setDiscount(obj.discount);
+            this.setDiscount(isNaN(obj.discount) ? 0 : obj.discount);
+            this.setCredit(isNaN(obj.credit) ? 0 : obj.credit);
             this.setInitialPayments(obj.payments);
             this.setNumPayments(obj.payments.length);
             this.setPaymentFrequency(obj.paymentFrequency);
+            this.setPrePayment(isNaN(obj.prePayment) ? 0 : obj.prePayment);
         };
 
         PaymentCalculator.prototype.generateSummary = function() {
@@ -68,8 +72,12 @@
                 pjs[payments[i]] = (typeof pjs[payments[i]] != 'undefined') ? pjs[payments[i]] + 1 : 1;
             }
 
-            // var output = this.settings.numPayments + ' payments totalling $' + this.sumPayments();
-            var output = this.settings.numPayments + ' payments totalling $' + this.sumPayments();
+            var output = this.settings.numPayments + ' payments totaling $' + this.sumPayments();
+
+            if (this.settings.credit > 0) {
+                output += ' ($' + this.settings.principal + ' less a credit of $' + this.settings.credit + ')';
+            }
+
             if (this.settings.discount > 0) {
                 output += ' w/ a $' + this.settings.discount + ' discount ';
             }
@@ -120,6 +128,11 @@
             }
         };
 
+        PaymentCalculator.prototype.setCredit = function(credit) {
+            if (credit > 0) {
+                this.settings.credit = credit;
+            }
+        };
 
         PaymentCalculator.prototype.setDiscount = function(discount) {
             if (discount > 0) {
@@ -130,7 +143,6 @@
                 }
             }
         };
-
 
         PaymentCalculator.prototype.setPaymentGravity = function(paymentGravity) {
             switch (paymentGravity.toLowerCase()) {
@@ -177,6 +189,14 @@
             }
         };
 
+        PaymentCalculator.prototype.zeroOutInitialPayments = function() {
+            var ip = [];
+            for (var i=0; i < this.settings.numPayments; i++) {
+                ip[i] = 0;
+            }
+            this.settings.initialPayments = ip;
+        };
+
         PaymentCalculator.prototype.initialPayments = function() {
             return this.settings.initialPayments;
         };
@@ -198,7 +218,7 @@
         };
 
         PaymentCalculator.prototype._calculatePaymentAmount = function(method) {
-            return this._round( (this.settings.principal - this.settings.prePayment - this.settings.discount - this.sumInitialPayments()) / this.openSlots );
+            return this._round( (this.settings.principal - this.settings.prePayment - this.settings.discount - this.settings.credit - this.sumInitialPayments()) / this.openSlots );
 
         };
 
@@ -220,13 +240,15 @@
         }
 
         PaymentCalculator.prototype._validatePayments = function() {
-            if (this.sumPayments() > this.settings.principal - this.settings.prePayment - this.settings.discount) {
+            if (this.sumPayments() > this.settings.principal - this.settings.prePayment - this.settings.discount - this.settings.credit) {
+                // console.log('top');
                 var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this._getMaxAdjustedPaymentIndex() : this._getMinAdjustedPaymentIndex();
-                this.payments[adjustedPaymentIndex] -= this._round(this.sumPayments() - this.settings.principal - this.settings.discount, 0.01); // Always round this to nearest penny
+                this.payments[adjustedPaymentIndex] -= this._round(this.sumPayments() - this.settings.principal + parseFloat(this.settings.prePayment) + parseFloat(this.settings.discount) + parseFloat(this.settings.credit), 0.01); // Always round this to nearest penny
             }
-            if (this.sumPayments() < this.settings.principal - this.settings.prePayment - this.settings.discount) {
+            if (this.sumPayments() < this.settings.principal - this.settings.prePayment - this.settings.discount - this.settings.credit) {
+                // console.log('bottom');
                 var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this._getMinAdjustedPaymentIndex() : this._getMaxAdjustedPaymentIndex();
-                this.payments[adjustedPaymentIndex] += this._round(this.settings.principal - this.settings.discount - this.sumPayments(), 0.01); // Always round this to nearest penny
+                this.payments[adjustedPaymentIndex] += this._round(this.settings.principal - this.settings.prePayment - this.settings.discount - this.settings.credit - this.sumPayments(), 0.01); // Always round this to nearest penny
             }
             // verify that all payments are positive integers
             for (var i=0; i < this.settings.numPayments; i++) {
@@ -250,6 +272,7 @@
                     return x;
                 }
             }
+            return this.payments.length - 1;
         };
 
         PaymentCalculator.prototype._round = function(amount, precision) {
