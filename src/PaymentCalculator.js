@@ -8,7 +8,6 @@
                 principal: 0,
                 discount: 0,
                 credit: 0,
-                prePayment: 0,
                 numPayments: 12,
                 initialPayments: [],
                 paymentFrequeuncy: 'monthly',
@@ -51,7 +50,6 @@
             obj.summary = this.generateSummary();
             obj.discount = this.settings.discount;
             obj.credit = this.settings.credit;
-            obj.prePayment = this.settings.prePayment;
             return obj;
         };
 
@@ -62,7 +60,6 @@
             this.setInitialPayments(obj.payments);
             this.setNumPayments(obj.payments.length);
             this.setPaymentFrequency(obj.paymentFrequency);
-            this.setPrePayment(isNaN(obj.prePayment) ? 0 : obj.prePayment);
         };
 
         PaymentCalculator.prototype.generateSummary = function() {
@@ -86,10 +83,6 @@
                 paystrings.push(pjs[key] + ' @ $' + key);
             }
             output += ' (' + paystrings.join(', ') + ')';
-
-            if (this.settings.prePayment > 0) {
-                output += ' including a $' + this.settings.prePayment + ' pre-payment ';
-            }
 
             return output;
         };
@@ -119,12 +112,6 @@
         PaymentCalculator.prototype.setPrincipal = function(principal) {
             if (principal > 0) {
                 this.settings.principal = principal;
-            }
-        };
-
-        PaymentCalculator.prototype.setPrePayment = function(prePayment) {
-            if (prePayment > 0) {
-                this.settings.prePayment = prePayment;
             }
         };
 
@@ -218,7 +205,7 @@
         };
 
         PaymentCalculator.prototype._calculatePaymentAmount = function(method) {
-            return this._round( (this.settings.principal - this.settings.prePayment - this.settings.discount - this.settings.credit - this.sumInitialPayments()) / this.openSlots );
+            return this._round( (this.settings.principal - this.settings.discount - this.settings.credit - this.sumInitialPayments()) / this.openSlots );
 
         };
 
@@ -240,15 +227,15 @@
         }
 
         PaymentCalculator.prototype._validatePayments = function() {
-            if (this.sumPayments() > this.settings.principal - this.settings.prePayment - this.settings.discount - this.settings.credit) {
+            if (this.sumPayments() > this.settings.principal - this.settings.discount - this.settings.credit) {
                 // console.log('top');
                 var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this._getMaxAdjustedPaymentIndex() : this._getMinAdjustedPaymentIndex();
-                this.payments[adjustedPaymentIndex] -= this._round(this.sumPayments() - this.settings.principal + parseFloat(this.settings.prePayment) + parseFloat(this.settings.discount) + parseFloat(this.settings.credit), 0.01); // Always round this to nearest penny
+                this.payments[adjustedPaymentIndex] -= this._round(this.sumPayments() - this.settings.principal + parseFloat(this.settings.discount) + parseFloat(this.settings.credit), 0.01); // Always round this to nearest penny
             }
-            if (this.sumPayments() < this.settings.principal - this.settings.prePayment - this.settings.discount - this.settings.credit) {
+            if (this.sumPayments() < this.settings.principal - this.settings.discount - this.settings.credit) {
                 // console.log('bottom');
                 var adjustedPaymentIndex = (this.settings.paymentGravity == 'top') ? this._getMinAdjustedPaymentIndex() : this._getMaxAdjustedPaymentIndex();
-                this.payments[adjustedPaymentIndex] += this._round(this.settings.principal - this.settings.prePayment - this.settings.discount - this.settings.credit - this.sumPayments(), 0.01); // Always round this to nearest penny
+                this.payments[adjustedPaymentIndex] += this._round(this.settings.principal - this.settings.discount - this.settings.credit - this.sumPayments(), 0.01); // Always round this to nearest penny
             }
             // verify that all payments are positive integers
             for (var i=0; i < this.settings.numPayments; i++) {
