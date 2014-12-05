@@ -1,0 +1,16 @@
+{
+    "name": "malaney/PaymentCalculator",
+    "version": "0.1.15",
+    "main": "src/PaymentCalculator.js",
+    "ignore": [
+        "lib",
+        "spec",
+        "component.json",
+        "src/mustache.js",
+        "bower.json",
+        "package.json",
+        "README.md",
+        "index.html",
+        "index2.html"
+    ]
+}
