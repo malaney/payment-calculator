@@ -1,6 +1,6 @@
 {
   "name": "payment_calculator",
-  "version": "0.1.15",
+  "version": "v0.1.16",
   "description": "A javascript library for computing payments toward a principal based on a number of payments.",
   "main": "src/PaymentCalculator.js",
   "scripts": {
