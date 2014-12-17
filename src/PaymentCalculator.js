@@ -69,10 +69,10 @@
                 pjs[payments[i]] = (typeof pjs[payments[i]] != 'undefined') ? pjs[payments[i]] + 1 : 1;
             }
 
-            var output = this.settings.numPayments + ' payments totaling $' + this.sumPayments();
+            var output = this.settings.numPayments + ' payments totaling $' + this._round(this.sumPayments());
 
             // if (this.settings.credit > 0) {
-                output += ' ($' + this.settings.principal + ' less a credit of $' + this.settings.credit + ')';
+                output += ' ($' + this.settings.principal + ' less a credit of $' + this._round(this.settings.credit) + ')';
             // }
 
             if (this.settings.discount > 0) {
@@ -80,7 +80,7 @@
             }
 
             for (var key in pjs) {
-                paystrings.push(pjs[key] + ' @ $' + key);
+                paystrings.push(pjs[key] + ' @ $' + this._round(key));
             }
             output += ' (' + paystrings.join(', ') + ')';
 

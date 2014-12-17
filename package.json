@@ -1,6 +1,6 @@
 {
   "name": "payment_calculator",
-  "version": "v0.1.16",
+  "version": "v0.1.18",
   "description": "A javascript library for computing payments toward a principal based on a number of payments.",
   "main": "src/PaymentCalculator.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@bitbucket.org/malaney/payment-calculator.git"
+    "url": "ssh://git@github.com/malaney/payment-calculator.git"
   },
   "keywords": [
     "payment",

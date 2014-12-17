@@ -1,6 +1,6 @@
 {
     "name": "malaney/PaymentCalculator",
-    "version": "v0.1.17",
+    "version": "v0.1.18",
     "main": "src/PaymentCalculator.js",
     "ignore": [
         "lib",
