@@ -46,10 +46,10 @@
             obj = {};
             obj.principal = this.settings.principal;
             obj.paymentFrequency = this.settings.paymentFrequeuncy;
-            obj.payments = this.generatePayments();
-            obj.summary = this.generateSummary();
             obj.discount = this.settings.discount;
             obj.credit = this.settings.credit;
+            obj.payments = this.generatePayments();
+            obj.summary = this.generateSummary();
             return obj;
         };
 
@@ -57,7 +57,7 @@
             this.setPrincipal(obj.principal);
             this.setDiscount(isNaN(obj.discount) ? 0 : obj.discount);
             this.setCredit(isNaN(obj.credit) ? 0 : obj.credit);
-            this.setInitialPayments(obj.payments);
+            // this.setInitialPayments(obj.payments);
             this.setNumPayments(obj.payments.length);
             this.setPaymentFrequency(obj.paymentFrequency);
         };
@@ -71,9 +71,9 @@
 
             var output = this.settings.numPayments + ' payments totaling $' + this.sumPayments();
 
-            if (this.settings.credit > 0) {
+            // if (this.settings.credit > 0) {
                 output += ' ($' + this.settings.principal + ' less a credit of $' + this.settings.credit + ')';
-            }
+            // }
 
             if (this.settings.discount > 0) {
                 output += ' w/ a $' + this.settings.discount + ' discount ';
@@ -116,9 +116,9 @@
         };
 
         PaymentCalculator.prototype.setCredit = function(credit) {
-            if (credit > 0) {
+            // if (credit > 0) {
                 this.settings.credit = credit;
-            }
+            // }
         };
 
         PaymentCalculator.prototype.setDiscount = function(discount) {
